@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MongoDB Demo</title>
+</head>
+<body>
+    <h1>MongoDB - Inserción y Listado</h1>
+    <form id="insertForm">
+        <label for="name">Nombre:</label>
+        <input type="text" id="name" name="name" required>
+        <label for="value">Valor:</label>
+        <input type="text" id="value" name="value" required>
+        <button type="submit">Insertar</button>
+    </form>
+
+    <h2>Datos en MongoDB:</h2>
+    <ul id="dataList"></ul>
+
+    <script>
+        const form = document.getElementById('insertForm');
+        const dataList = document.getElementById('dataList');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('name').value;
+            const value = document.getElementById('value').value;
+
+            // Insertar datos en MongoDB a través de la API
+            await fetch('http://localhost:3000/api/data', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, value })
+            });
+
+            // Recargar los datos
+            loadData();
+        });
+
+        async function loadData() {
+            const response = await fetch('http://localhost:3000/api/data');
+            const data = await response.json();
+            dataList.innerHTML = '';
+            data.forEach(item => {
+                const li = document.createElement('li');
+                li.textContent = `Nombre: ${item.name}, Valor: ${item.value}`;
+                dataList.appendChild(li);
+            });
+        }
+
+        // Cargar datos al inicio
+        loadData();
+    </script>
+</body>
+</html>
